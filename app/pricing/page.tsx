@@ -1,6 +1,6 @@
 'use client'
 export const dynamic = 'force-dynamic'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
@@ -9,7 +9,7 @@ import Footer from '@/components/Footer'
 import { Check, Trophy, Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-export default function PricingPage() {
+function PricingContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [user, setUser] = useState<any>(null)
@@ -183,4 +183,12 @@ export default function PricingPage() {
             <Footer />
         </div>
     )
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center"><div className="text-green-400 animate-pulse">Loading...</div></div>}>
+      <PricingContent />
+    </Suspense>
+  )
 }

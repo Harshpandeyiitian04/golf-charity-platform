@@ -1,7 +1,7 @@
 'use client'
 export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
@@ -14,7 +14,6 @@ import toast from 'react-hot-toast'
 
 export default function DashboardPage() {
     const router = useRouter()
-    const searchParams = useSearchParams()
     const [profile, setProfile] = useState<any>(null)
     const [scores, setScores] = useState<any[]>([])
     const [charity, setCharity] = useState<any>(null)
@@ -23,7 +22,8 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        if (searchParams.get('success')) {
+        const params = new URLSearchParams(window.location.search)
+        if (params.get('success')) {
             toast.success('🎉 Subscription activated! Welcome to GolfGives!')
         }
         loadDashboard()

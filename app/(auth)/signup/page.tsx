@@ -51,6 +51,21 @@ export default function SignupPage() {
                 return
             }
 
+            // Also insert into users table for foreign key constraint
+            const { error: userError } = await supabase
+                .from('users')
+                .upsert({
+                    id: data.user.id,
+                    email,
+                    full_name: fullName,
+                })
+
+            if (userError) {
+                toast.error('User creation failed: ' + userError.message)
+                setLoading(false)
+                return
+            }
+
             toast.success('Account created! Redirecting to dashboard...')
             setTimeout(() => {
                 router.push('/dashboard')

@@ -61,6 +61,9 @@ export default function Navbar() {
                                 <Link href="/dashboard" className="text-gray-300 hover:text-green-400 transition-colors text-sm">
                                     Dashboard
                                 </Link>
+                                <Link href="/scores" className="text-gray-300 hover:text-green-400 text-sm" onClick={() => setIsOpen(false)}>Scores</Link>
+                                <Link href="/draws" className="text-gray-300 hover:text-green-400 text-sm" onClick={() => setIsOpen(false)}>Draws</Link>
+                                <Link href="/charity" className="text-gray-300 hover:text-green-400 text-sm" onClick={() => setIsOpen(false)}>Charity</Link>
                                 {isAdmin && (
                                     <Link href="/admin" className="text-yellow-400 hover:text-yellow-300 transition-colors text-sm font-medium">
                                         Admin
@@ -101,7 +104,18 @@ export default function Navbar() {
                         <Link href="/how-it-works" className="text-gray-300 hover:text-green-400 text-sm" onClick={() => setIsOpen(false)}>How It Works</Link>
                         {user ? (
                             <>
-                                <Link href="/dashboard" className="text-gray-300 hover:text-green-400 text-sm" onClick={() => setIsOpen(false)}>Dashboard</Link>
+                                <Link href="/dashboard" className="text-gray-300 hover:text-green-400 transition-colors text-sm">
+                                    Dashboard
+                                </Link>
+                                <Link href="/scores" className="text-gray-300 hover:text-green-400 transition-colors text-sm">
+                                    Scores
+                                </Link>
+                                <Link href="/draws" className="text-gray-300 hover:text-green-400 transition-colors text-sm">
+                                    Draws
+                                </Link>
+                                <Link href="/charity" className="text-gray-300 hover:text-green-400 transition-colors text-sm">
+                                    Charity
+                                </Link>
                                 {isAdmin && (
                                     <Link href="/admin" className="text-yellow-400 text-sm" onClick={() => setIsOpen(false)}>Admin</Link>
                                 )}

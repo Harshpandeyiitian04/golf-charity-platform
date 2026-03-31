@@ -1,7 +1,7 @@
 'use client'
 export const dynamic = 'force-dynamic'
-import { useState, useEffect, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useState, useEffect, } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
@@ -11,7 +11,6 @@ import toast from 'react-hot-toast'
 
 function PricingContent() {
     const router = useRouter()
-    const searchParams = useSearchParams()
     const [user, setUser] = useState<any>(null)
     const [loading, setLoading] = useState<string | null>(null)
 
@@ -22,7 +21,7 @@ function PricingContent() {
         }
         getUser()
 
-        if (searchParams.get('cancelled')) {
+        if (typeof window !== 'undefined' && window.location.search.includes('cancelled=true')) {
             toast.error('Subscription cancelled — no charge made.')
         }
     }, [])
@@ -186,9 +185,7 @@ function PricingContent() {
 }
 
 export default function PricingPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center"><div className="text-green-400 animate-pulse">Loading...</div></div>}>
-      <PricingContent />
-    </Suspense>
-  )
+    return (
+        <PricingContent />
+    )
 }

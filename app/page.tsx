@@ -1,9 +1,7 @@
-
-
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      Home
-    </div>
-  );
+    <main className="min-h-screen flex items-center justify-center">
+      <h1 className="text-4xl font-bold text-green-400">GolfGives — Coming Soon</h1>
+    </main>
+  )
 }

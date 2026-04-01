@@ -41,35 +41,20 @@ export default function SignupPage() {
                 .from('profiles')
                 .upsert({
                     id: data.user.id,
-                    email,
+                    email: data.user.email,
                     full_name: fullName,
-                })
+                    subscription_status: 'inactive',
+                    charity_percentage: 10,
+                    is_admin: false,
+                }, { onConflict: 'id' })
 
             if (profileError) {
-                toast.error('Profile creation failed: ' + profileError.message)
-                setLoading(false)
-                return
+                console.error('Profile error:', profileError)
+                // Don't block login even if profile fails
             }
 
-            // Also insert into users table for foreign key constraint
-            const { error: userError } = await supabase
-                .from('users')
-                .upsert({
-                    id: data.user.id,
-                    email,
-                    full_name: fullName,
-                })
-
-            if (userError) {
-                toast.error('User creation failed: ' + userError.message)
-                setLoading(false)
-                return
-            }
-
-            toast.success('Account created! Redirecting to dashboard...')
-            setTimeout(() => {
-                router.push('/dashboard')
-            }, 1000)
+            toast.success('Account created!')
+            setTimeout(() => router.push('/dashboard'), 1000)
         }
 
         setLoading(false)

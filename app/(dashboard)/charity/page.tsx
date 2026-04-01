@@ -8,86 +8,103 @@ import { Heart, CheckCircle, ExternalLink } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 export default function CharityPage() {
-    const router = useRouter()
-    const [charities, setCharities] = useState<any[]>([])
-    const [profile, setProfile] = useState<any>(null)
-    const [selectedCharity, setSelectedCharity] = useState<string | null>(null)
-    const [percentage, setPercentage] = useState(10)
-    const [loading, setLoading] = useState(true)
-    const [saving, setSaving] = useState(false)
-    const [userId, setUserId] = useState<string | null>(null)
+  const router = useRouter()
+  const [charities, setCharities] = useState<any[]>([])
+  const [profile, setProfile] = useState<any>(null)
+  const [selectedCharity, setSelectedCharity] = useState<string | null>(null)
+  const [percentage, setPercentage] = useState(10)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
+  const [donationAmount, setDonationAmount] = useState('10')
+  const [donating, setDonating] = useState(false)
 
-    useEffect(() => {
-        loadData()
-    }, [])
+  const handleDonate = async () => {
+    if (!selectedCharity) { toast.error('Select a charity first'); return }
+    setDonating(true)
+    const charityName = charities.find(c => c.id === selectedCharity)?.name || 'Charity'
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch('/api/donate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: Number(donationAmount), charityName, email: session?.user?.email }),
+    })
+    const data = await res.json()
+    if (data.url) window.location.href = data.url
+    else { toast.error('Failed to create donation'); setDonating(false) }
+  }
 
-    const loadData = async () => {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (!session) { router.push('/login'); return }
+  useEffect(() => {
+    loadData()
+  }, [])
 
-        setUserId(session.user.id)
+  const loadData = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) { router.push('/login'); return }
 
-        // Load profile
-        const { data: profileData } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
+    setUserId(session.user.id)
 
-        setProfile(profileData)
-        setSelectedCharity(profileData?.charity_id || null)
-        setPercentage(profileData?.charity_percentage || 10)
+    // Load profile
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', session.user.id)
+      .single()
 
-        // Load charities
-        const { data: charitiesData } = await supabase
-            .from('charities')
-            .select('*')
-            .order('is_featured', { ascending: false })
+    setProfile(profileData)
+    setSelectedCharity(profileData?.charity_id || null)
+    setPercentage(profileData?.charity_percentage || 10)
 
-        setCharities(charitiesData || [])
-        setLoading(false)
+    // Load charities
+    const { data: charitiesData } = await supabase
+      .from('charities')
+      .select('*')
+      .order('is_featured', { ascending: false })
+
+    setCharities(charitiesData || [])
+    setLoading(false)
+  }
+
+  const handleSave = async () => {
+    if (!selectedCharity) {
+      toast.error('Please select a charity first')
+      return
     }
 
-    const handleSave = async () => {
-        if (!selectedCharity) {
-            toast.error('Please select a charity first')
-            return
-        }
-
-        if (percentage < 10 || percentage > 100) {
-            toast.error('Contribution must be between 10% and 100%')
-            return
-        }
-
-        setSaving(true)
-
-        const { error } = await supabase
-            .from('profiles')
-            .update({
-                charity_id: selectedCharity,
-                charity_percentage: percentage,
-            })
-            .eq('id', userId)
-
-        if (error) {
-            toast.error('Failed to save: ' + error.message)
-            setSaving(false)
-            return
-        }
-
-        toast.success('Charity preference saved!')
-        setSaving(false)
+    if (percentage < 10 || percentage > 100) {
+      toast.error('Contribution must be between 10% and 100%')
+      return
     }
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-                <div className="text-green-400 animate-pulse">Loading charities...</div>
-            </div>
-        )
+    setSaving(true)
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        charity_id: selectedCharity,
+        charity_percentage: percentage,
+      })
+      .eq('id', userId)
+
+    if (error) {
+      toast.error('Failed to save: ' + error.message)
+      setSaving(false)
+      return
     }
 
+    toast.success('Charity preference saved!')
+    setSaving(false)
+  }
+
+  if (loading) {
     return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="text-green-400 animate-pulse">Loading charities...</div>
+      </div>
+    )
+  }
+
+  return (
     <div className="min-h-screen bg-[#0a0a0a]">
       <Navbar />
       <div className="pt-24 pb-16 px-4">
@@ -121,11 +138,10 @@ export default function CharityPage() {
               <div
                 key={charity.id}
                 onClick={() => setSelectedCharity(charity.id)}
-                className={`relative bg-white/5 border rounded-3xl p-6 cursor-pointer transition-all hover:scale-[1.02] ${
-                  selectedCharity === charity.id
-                    ? 'border-pink-500/60 bg-pink-500/10'
-                    : 'border-white/10 hover:border-white/20'
-                }`}
+                className={`relative bg-white/5 border rounded-3xl p-6 cursor-pointer transition-all hover:scale-[1.02] ${selectedCharity === charity.id
+                  ? 'border-pink-500/60 bg-pink-500/10'
+                  : 'border-white/10 hover:border-white/20'
+                  }`}
               >
                 {/* Featured badge */}
                 {charity.is_featured && (
@@ -207,11 +223,10 @@ export default function CharityPage() {
                 <button
                   key={p}
                   onClick={() => setPercentage(p)}
-                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                    percentage === p
-                      ? 'bg-pink-500 text-white'
-                      : 'bg-white/10 text-gray-300 hover:bg-white/20'
-                  }`}
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${percentage === p
+                    ? 'bg-pink-500 text-white'
+                    : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                    }`}
                 >
                   {p}%
                 </button>
@@ -228,6 +243,36 @@ export default function CharityPage() {
             <Heart size={20} />
             {saving ? 'Saving...' : 'Save Charity Preference'}
           </button>
+          {/* Independent Donation */}
+          <div className="mt-6 bg-pink-500/10 border border-pink-500/20 rounded-3xl p-6">
+            <h3 className="text-white font-bold mb-2 flex items-center gap-2">
+              <Heart size={18} className="text-pink-400" />
+              Make an Independent Donation
+            </h3>
+            <p className="text-gray-400 text-sm mb-4">
+              Donate directly to your chosen charity — not tied to gameplay.
+            </p>
+            <div className="flex gap-3 items-center">
+              <div className="relative flex-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">£</span>
+                <input
+                  type="number"
+                  value={donationAmount}
+                  onChange={e => setDonationAmount(e.target.value)}
+                  placeholder="10"
+                  min="1"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-8 pr-4 py-3 text-white focus:outline-none focus:border-pink-500/50"
+                />
+              </div>
+              <button
+                onClick={handleDonate}
+                disabled={donating || !selectedCharity}
+                className="bg-pink-500 hover:bg-pink-400 disabled:bg-pink-500/40 text-white font-bold px-6 py-3 rounded-xl transition-all"
+              >
+                {donating ? 'Redirecting...' : 'Donate Now'}
+              </button>
+            </div>
+          </div>
 
         </div>
       </div>

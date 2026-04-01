@@ -35,34 +35,16 @@ export default function AdminWinnersPage() {
     }
 
     const updateVerification = async (id: string, status: 'approved' | 'rejected') => {
-        const { data: winner, error: winnerFetchError } = await supabase
-            .from('winners')
-            .select('*, profiles(email, full_name), draws(month)')
-            .eq('id', id)
-            .single()
-        if (winnerFetchError) { toast.error('Failed to load winner info'); return }
+        const response = await fetch('/api/admin/winners', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, verification_status: status }),
+        })
 
-        const { error } = await supabase
-            .from('winners')
-            .update({ verification_status: status })
-            .eq('id', id)
-        if (error) { toast.error('Failed to update'); return }
-
-        try {
-            await fetch('/api/notify/winner', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: winner.profiles?.email,
-                    fullName: winner.profiles?.full_name,
-                    drawMonth: winner.draws?.month,
-                    matchType: winner.match_type,
-                    prizeAmount: winner.prize_amount,
-                    verificationStatus: status,
-                }),
-            })
-        } catch (e) {
-            console.warn('Notification failed', e)
+        const data = await response.json()
+        if (!response.ok || data.error) {
+            toast.error(data.error || 'Failed to update')
+            return
         }
 
         toast.success(`Winner ${status}!`)
@@ -177,7 +159,7 @@ export default function AdminWinnersPage() {
                             </div>
 
                             {/* Status & Actions */}
-                            <div className="flex flex-col gap-3 min-w-[180px]">
+                            <div className="flex flex-col gap-3 min-w-45">
 
                                 {/* Verification Status */}
                                 <div className="flex items-center gap-2">

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { randomDraw, algorithmicDraw, checkMatch, calculatePrizePools } from '@/lib/drawEngine'
-import { sendEmail } from '@/lib/email'
+import { sendEmail, emailTemplates } from '@/lib/email'
 
 export async function POST(req: NextRequest) {
   try {
@@ -112,23 +112,17 @@ export async function POST(req: NextRequest) {
       }))
       await supabaseAdmin.from('winners').insert(winnerRows)
 
-      // Send winner email notifications
+      // Send winner-specific emails
       for (const winner of splitWinners) {
-        await sendEmail({
-          to: winner.email,
-          subject: 'GolfGives draw winner! ✅',
-          text: `Congratulations! You won ${winner.matchType} with £${winner.prize.toFixed(2)}. Please upload proof to claim your prize.`,
-        })
+        const winnerEmail = emailTemplates.winnerAlert(winner.email, winner.matchType, winner.prize)
+        await sendEmail({ to: winner.email, ...winnerEmail })
       }
     }
 
-    // Optional rich notification for all active subscribers
+    // Send draw result notification to all active subscribers
+    const drawEmail = emailTemplates.drawPublished(month, drawnNumbers)
     await Promise.all(subscribers.map(async (u: any) => {
-      await sendEmail({
-        to: u.email,
-        subject: `GolfGives draw results for ${month}`,
-        text: `Thanks for playing 🎉 Draw numbers: ${drawnNumbers.join(', ')}. Winners and details are posted on the platform.`,
-      })
+      await sendEmail({ to: u.email, ...drawEmail })
     }))
 
     return NextResponse.json({

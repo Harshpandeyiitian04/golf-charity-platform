@@ -11,6 +11,7 @@ import {
     TrendingUp, CheckCircle, XCircle, ChevronRight
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { motion } from 'framer-motion'
 
 function DashboardContent() {
     const router = useRouter()
@@ -87,32 +88,44 @@ function DashboardContent() {
     const isActive = profile?.subscription_status === 'active'
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a]">
+        <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] ">
             <Navbar />
-            <div className="pt-24 pb-16 px-4">
+            <div className="pt-20 pb-16 px-4">
                 <div className="max-w-6xl mx-auto">
 
                     <div className="mb-8">
-                        <h1 className="text-3xl md:text-4xl font-black text-white">
+                        <motion.h1
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6 }}
+                            className="text-3xl md:text-4xl font-black text-white"
+                        >
                             Welcome back, <span className="text-green-400">{profile?.full_name?.split(' ')[0] || 'Golfer'}</span> 👋
-                        </h1>
-                        <p className="text-gray-400 mt-2">Here's your GolfGives overview</p>
+                        </motion.h1>
+                        <motion.p
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                            className="text-gray-400 mt-2"
+                        >
+                            Here's your GolfGives overview
+                        </motion.p>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-all duration-300">
                             <div className="text-gray-400 text-xs mb-1">Scores Logged</div>
                             <div className="text-2xl font-black text-white">{scores.length}<span className="text-gray-500 text-sm">/5</span></div>
                         </div>
-                        <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-all duration-300">
                             <div className="text-gray-400 text-xs mb-1">Draws Entered</div>
                             <div className="text-2xl font-black text-white">{draws.length}</div>
                         </div>
-                        <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-all duration-300">
                             <div className="text-gray-400 text-xs mb-1">Total Won</div>
                             <div className="text-2xl font-black text-green-400">£{totalWon.toFixed(0)}</div>
                         </div>
-                        <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-all duration-300">
                             <div className="text-gray-400 text-xs mb-1">Charity %</div>
                             <div className="text-2xl font-black text-pink-400">{profile?.charity_percentage || 10}%</div>
                         </div>
@@ -121,7 +134,7 @@ function DashboardContent() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                         {/* Subscription */}
-                        <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
+                        <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 rounded-3xl p-6 hover:shadow-lg transition-all duration-300">
                             <div className="flex items-center gap-2 mb-4">
                                 <CheckCircle size={20} className="text-green-400" />
                                 <h2 className="text-white font-bold text-lg">Subscription</h2>
@@ -159,7 +172,7 @@ function DashboardContent() {
                         </div>
 
                         {/* Charity */}
-                        <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
+                        <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 rounded-3xl p-6 hover:shadow-lg transition-all duration-300">
                             <div className="flex items-center gap-2 mb-4">
                                 <Heart size={20} className="text-pink-400" />
                                 <h2 className="text-white font-bold text-lg">Your Charity</h2>
@@ -184,7 +197,7 @@ function DashboardContent() {
                         </div>
 
                         {/* Scores */}
-                        <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
+                        <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 rounded-3xl p-6 hover:shadow-lg transition-all duration-300">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-2">
                                     <Target size={20} className="text-blue-400" />
@@ -220,7 +233,7 @@ function DashboardContent() {
                         </div>
 
                         {/* Draws & Winnings */}
-                        <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
+                        <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 rounded-3xl p-6 hover:shadow-lg transition-all duration-300">
                             <div className="flex items-center gap-2 mb-4">
                                 <Trophy size={20} className="text-yellow-400" />
                                 <h2 className="text-white font-bold text-lg">Draws & Winnings</h2>

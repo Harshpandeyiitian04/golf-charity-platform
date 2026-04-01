@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Heart, CheckCircle, ExternalLink } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { motion } from 'framer-motion'
 
 export default function CharityPage() {
   const router = useRouter()
@@ -105,13 +106,23 @@ export default function CharityPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a]">
       <Navbar />
-      <div className="pt-24 pb-16 px-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="pt-20 pb-16 px-4"
+      >
         <div className="max-w-3xl mx-auto">
 
           {/* Header */}
-          <div className="mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-8"
+          >
             <div className="flex items-center gap-3 mb-2">
               <Heart size={28} className="text-pink-400" />
               <h1 className="text-3xl font-black text-white">Choose Your Charity</h1>
@@ -119,7 +130,7 @@ export default function CharityPage() {
             <p className="text-gray-400">
               A minimum of 10% of your subscription goes to your chosen charity every month.
             </p>
-          </div>
+          </motion.div>
 
           {/* Current Selection Banner */}
           {profile?.charity_id && (
@@ -134,14 +145,11 @@ export default function CharityPage() {
 
           {/* Charity Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            {charities.map((charity) => (
+            {charities.map((charity, index) => (
               <div
                 key={charity.id}
                 onClick={() => setSelectedCharity(charity.id)}
-                className={`relative bg-white/5 border rounded-3xl p-6 cursor-pointer transition-all hover:scale-[1.02] ${selectedCharity === charity.id
-                  ? 'border-pink-500/60 bg-pink-500/10'
-                  : 'border-white/10 hover:border-white/20'
-                  }`}
+                className={`relative bg-white/5 border rounded-3xl p-6 cursor-pointer transition-all hover:scale-[1.02] ${selectedCharity === charity.id ? 'border-pink-500/60 bg-pink-500/10' : 'border-white/10 hover:border-white/20'}`}
               >
                 {/* Featured badge */}
                 {charity.is_featured && (
@@ -189,7 +197,12 @@ export default function CharityPage() {
           </div>
 
           {/* Contribution Percentage */}
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-6 mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="bg-white/5 border border-white/10 rounded-3xl p-6 mb-6"
+          >
             <h2 className="text-white font-bold text-lg mb-2">
               Your Contribution Percentage
             </h2>
@@ -232,19 +245,29 @@ export default function CharityPage() {
                 </button>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Save Button */}
-          <button
+          <motion.button
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={handleSave}
             disabled={saving || !selectedCharity}
             className="w-full bg-pink-500 hover:bg-pink-400 disabled:bg-pink-500/40 text-white font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-2 text-lg"
           >
             <Heart size={20} />
             {saving ? 'Saving...' : 'Save Charity Preference'}
-          </button>
+          </motion.button>
           {/* Independent Donation */}
-          <div className="mt-6 bg-pink-500/10 border border-pink-500/20 rounded-3xl p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="mt-6 bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 rounded-3xl p-6"
+          >
             <h3 className="text-white font-bold mb-2 flex items-center gap-2">
               <Heart size={18} className="text-pink-400" />
               Make an Independent Donation
@@ -272,11 +295,11 @@ export default function CharityPage() {
                 {donating ? 'Redirecting...' : 'Donate Now'}
               </button>
             </div>
-          </div>
+          </motion.div>
 
         </div>
-      </div>
+      </motion.div>
       <Footer />
-    </div >
+    </div>
   )
 }
